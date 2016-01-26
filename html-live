@@ -1,0 +1,95 @@
+##!/bin/sh
+
+mkdir -p src/css/img
+
+npm install --save-dev gulp browser-sync gulp-jade gulp-stylus nib
+
+cat << EOF > src/index.jade
+doctype html
+html
+  head
+    meta(charset='UTF-8')
+    title Hello, Jade!
+    link(link href="css/style.css" rel="stylesheet" type="text/css")
+  body
+    h1 Hello, Jade!   a.chas
+    p  single page project
+    h2 he tehs 
+      p aaaaa
+    div
+      p aaaoeutc
+    p テスト完了
+    div
+      p bbbbee
+EOF
+
+cat << EOF > src/css/style.styl
+@import 'nib'
+
+html, body, div, span, p, a, del, em, img, ol, ul, li, fieldset, form, label {
+	margin: 0
+	padding: 0
+	border: 0
+	font-size: 100%
+	font: inherit
+	vertical-align: baseline
+}
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+	display: block
+}
+
+html, body {
+	line-height: 1
+	min-height:vh
+  font-family:"Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "メイリオ", arial, helvetica, sans-serif
+  background-color: blue
+}
+
+EOF
+
+cat << EOF > gulpfile.js
+var gulp   = require('gulp');
+var browserSync = require('browser-sync').create();
+var jade   = require('gulp-jade');
+var stylus = require('gulp-stylus');
+var nib    = require('nib');
+
+
+gulp.task('jade', function() {
+  gulp.src('./src/*.jade')
+    .pipe(jade({
+      pretty: true
+    }))
+    .pipe(gulp.dest('./src'));
+});
+
+gulp.task('stylus', function() {
+    gulp.src('./src/css/*.styl')
+      .pipe(stylus({
+        use: [nib()],
+        print: true
+      }))
+      .pipe(gulp.dest('./src/css'));
+});
+
+// Static server
+gulp.task('browser-sync', function() {
+    browserSync.init({
+        server: {
+            baseDir: "./src"
+        }
+    });
+
+    // 
+    gulp.watch([
+           './src/**',
+           './src/css/**'
+           ], function() {
+        browserSync.reload();
+    });
+});
+
+gulp.task('default', ['jade','stylus', 'browser-sync']);
+EOF
