@@ -6,6 +6,9 @@
 
 - 必要なライブラリを自動的にダウンロードする
 
+### Warning
+This software is still BETA quality.
+
 ### 準備(Mac OS X)
 node.jsとnpmパッケージをインストールする
 
