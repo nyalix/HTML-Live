@@ -1,8 +1,11 @@
 ##!/bin/sh
 
-mkdir -p src/css/img
+npm init
 
-npm install --save-dev gulp browser-sync gulp-jade gulp-stylus nib
+mkdir -p src/css/img
+mkdir -p dist/css/img
+
+npm install --save-dev gulp browser-sync gulp-jade gulp-stylus gulp-autoprefixer gulp-plumber
 
 cat << EOF > src/index.jade
 doctype html
@@ -12,20 +15,15 @@ html
     title Hello, Jade!
     link(link href="css/style.css" rel="stylesheet" type="text/css")
   body
-    h1 Hello, Jade!   a.chas
-    p  single page project
-    h2 he tehs 
-      p aaaaa
-    div
-      p aaaoeutc
-    p テスト完了
-    div
-      p bbbbee
+    div.one
+      h1 Hello, Happy Live Coding!
+    div.twe
+      h2 edit me index.jade
+    div.three
+      h2 and style.styl
 EOF
 
 cat << EOF > src/css/style.styl
-@import 'nib'
-
 html, body, div, span, p, a, del, em, img, ol, ul, li, fieldset, form, label {
 	margin: 0
 	padding: 0
@@ -44,9 +42,20 @@ html, body {
 	line-height: 1
 	min-height:vh
   font-family:"Hiragino Kaku Gothic Pro", "ヒラギノ角ゴ Pro W3", "メイリオ", arial, helvetica, sans-serif
-  background-color: blue
 }
 
+div {
+  height: 100vh
+}
+.one {
+  background-color: red
+}
+.two {
+    background-color: blue
+}
+.three {
+  background-color: green
+}
 EOF
 
 cat << EOF > gulpfile.js
@@ -54,23 +63,21 @@ var gulp   = require('gulp');
 var browserSync = require('browser-sync').create();
 var jade   = require('gulp-jade');
 var stylus = require('gulp-stylus');
-var nib    = require('nib');
-
+var autoprefixer = require("gulp-autoprefixer");
+var plumber = require("gulp-plumber");
 
 gulp.task('jade', function() {
   gulp.src('./src/*.jade')
-    .pipe(jade({
-      pretty: true
-    }))
+    .pipe(plumber())
+    .pipe(jade({pretty: true}))
     .pipe(gulp.dest('./src'));
 });
 
 gulp.task('stylus', function() {
     gulp.src('./src/css/*.styl')
-      .pipe(stylus({
-        use: [nib()],
-        print: true
-      }))
+      .pipe(plumber())
+      .pipe(stylus({print: true}))
+      .pipe(autoprefixer())
       .pipe(gulp.dest('./src/css'));
 });
 
@@ -81,14 +88,10 @@ gulp.task('browser-sync', function() {
             baseDir: "./src"
         }
     });
-
-    // 
-    gulp.watch([
-           './src/**',
-           './src/css/**'
-           ], function() {
-        browserSync.reload();
-    });
+    gulp.watch('./src/*.jade', ['jade']);
+    gulp.watch('./src/css/*.styl', ['stylus']);
+    gulp.watch(['./src/**','./src/css/**'], function() {
+	    browserSync.reload();});
 });
 
 gulp.task('default', ['jade','stylus', 'browser-sync']);
