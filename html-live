@@ -2,8 +2,11 @@
 
 npm init
 
-mkdir -p src/css/img
 mkdir -p dist/css/img
+mkdir -p src/css
+
+ln -s ../../dist/css/img src/css
+
 
 npm install --save-dev gulp browser-sync gulp-jade gulp-stylus gulp-autoprefixer gulp-plumber
 
@@ -70,7 +73,7 @@ gulp.task('jade', function() {
   gulp.src('./src/*.jade')
     .pipe(plumber())
     .pipe(jade({pretty: true}))
-    .pipe(gulp.dest('./src'));
+    .pipe(gulp.dest('./dist'));
 });
 
 gulp.task('stylus', function() {
@@ -78,19 +81,19 @@ gulp.task('stylus', function() {
       .pipe(plumber())
       .pipe(stylus({print: true}))
       .pipe(autoprefixer())
-      .pipe(gulp.dest('./src/css'));
+      .pipe(gulp.dest('./dist/css'));
 });
 
 // Static server
 gulp.task('browser-sync', function() {
     browserSync.init({
         server: {
-            baseDir: "./src"
+            baseDir: "./dist"
         }
     });
     gulp.watch('./src/*.jade', ['jade']);
     gulp.watch('./src/css/*.styl', ['stylus']);
-    gulp.watch(['./src/**','./src/css/**'], function() {
+    gulp.watch(['./dist/**','./dist/css/**'], function() {
 	    browserSync.reload();});
 });
 
